@@ -1,0 +1,42 @@
+name: Generate sitemap for Blogger
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests lxml
+
+      - name: Generate sitemap
+        run: |
+          python scripts/generate_sitemap.py
+
+      - name: Commit and push sitemap (to docs/)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p docs
+          git add docs/sitemap.xml
+          git commit -m "chore(sitemap): update sitemap" || echo "No changes to commit"
+          git push
