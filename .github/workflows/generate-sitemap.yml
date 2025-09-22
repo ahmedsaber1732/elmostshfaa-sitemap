@@ -1,5 +1,16 @@
 name: Generate sitemap for Blogger
 
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
 on:
   schedule:
     - cron: '0 2 * * *'
